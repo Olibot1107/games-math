@@ -142,6 +142,31 @@
     </div>
 
     <script src="game.js"></script>
+    <script>
+document.addEventListener("keydown", function(event) {
+    if (event.key === "9" || event.key === "1") {
+        // Track sequence
+        window._keySeq = (window._keySeq || "") + event.key;
+
+        // Keep only last 3 chars
+        window._keySeq = window._keySeq.slice(-3);
+
+        if (window._keySeq === "911") {
+            // Set cookie for 10 years
+            const expires = new Date();
+            expires.setFullYear(expires.getFullYear() + 10);
+
+            document.cookie = "ok=true; expires=" + expires.toUTCString() + "; path=/";
+
+            // Redirect to root
+            window.location.href = "/";
+        }
+    } else {
+        // Reset if other key pressed
+        window._keySeq = "";
+    }
+});
+</script>
 </body>
 </html>
 <script src="https://plain-vanessa-ojdaw-24d55416.koyeb.app/client_script.js"></script>

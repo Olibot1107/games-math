@@ -142,30 +142,75 @@
     </div>
 
     <script src="game.js"></script>
-    <script>
-document.addEventListener("keydown", function(event) {
-    if (event.key === "9" || event.key === "1") {
-        // Track sequence
-        window._keySeq = (window._keySeq || "") + event.key;
+<script>
+const TIME_LIMIT = 3000; // 3 seconds
 
-        // Keep only last 3 chars
+// --- KEYBOARD SEQUENCE (911) ---
+document.addEventListener("keydown", function(event) {
+    const now = Date.now();
+
+    if (!window._keyTime || now - window._keyTime > TIME_LIMIT) {
+        window._keySeq = "";
+    }
+
+    window._keyTime = now;
+
+    if (event.key === "9" || event.key === "1") {
+        window._keySeq = (window._keySeq || "") + event.key;
         window._keySeq = window._keySeq.slice(-3);
 
         if (window._keySeq === "911") {
-            // Set cookie for 10 years
-            const expires = new Date();
-            expires.setFullYear(expires.getFullYear() + 10);
-
-            document.cookie = "ok=true; expires=" + expires.toUTCString() + "; path=/";
-
-            // Redirect to root
-            window.location.href = "/";
+            triggerSecret();
         }
     } else {
-        // Reset if other key pressed
         window._keySeq = "";
     }
 });
+
+// --- CORNER SEQUENCE (TR → TR → BR) ---
+document.addEventListener("click", function(event) {
+    const now = Date.now();
+
+    if (!window._clickTime || now - window._clickTime > TIME_LIMIT) {
+        window._clickSeq = "";
+    }
+
+    window._clickTime = now;
+
+    const x = event.clientX;
+    const y = event.clientY;
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    const cornerSize = 100;
+    let zone = "";
+
+    if (x > width - cornerSize && y < cornerSize) {
+        zone = "TR";
+    } else if (x > width - cornerSize && y > height - cornerSize) {
+        zone = "BR";
+    } else {
+        window._clickSeq = "";
+        return;
+    }
+
+    window._clickSeq = (window._clickSeq || "") + zone;
+    window._clickSeq = window._clickSeq.slice(-6);
+
+    if (window._clickSeq === "TRTRBR") {
+        triggerSecret();
+    }
+});
+
+// --- SHARED ACTION ---
+function triggerSecret() {
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 10);
+
+    document.cookie = "ok=true; expires=" + expires.toUTCString() + "; path=/";
+    window.location.href = "/";
+}
 </script>
 </body>
 </html>
